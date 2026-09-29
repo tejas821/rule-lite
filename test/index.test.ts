@@ -1,4 +1,4 @@
-import { RuleEngine, evaluate, getByPath, Rule } from '../src/index';
+import { RuleEngine, evaluate, getByPath, setByPath, Rule } from '../src/index';
 
 describe('getByPath', () => {
   it('resolves nested dot paths', () => {
@@ -13,6 +13,42 @@ describe('getByPath', () => {
   it('returns the object itself for an empty path', () => {
     const obj = { a: 1 };
     expect(getByPath(obj, '')).toBe(obj);
+  });
+});
+
+describe('setByPath', () => {
+  it('sets a top-level key (no dot in path)', () => {
+    const obj: Record<string, unknown> = { a: 1 };
+    setByPath(obj, 'a', 2);
+    expect(obj.a).toBe(2);
+  });
+
+  it('writes a nested dot-path, creating missing intermediate objects', () => {
+    const obj: Record<string, unknown> = {};
+    setByPath(obj, 'a.b.c', 42);
+    expect(getByPath(obj, 'a.b.c')).toBe(42);
+  });
+
+  it('preserves sibling keys at every level of the path', () => {
+    const obj: Record<string, unknown> = { a: { b: { c: 1, d: 2 }, e: 3 } };
+    setByPath(obj, 'a.b.c', 99);
+    expect(obj).toEqual({ a: { b: { c: 99, d: 2 }, e: 3 } });
+  });
+
+  it('does not mutate a nested object shared with another reference (safe on a shallow-copied parent)', () => {
+    const original = { address: { city: 'Delhi', zip: '110001' } };
+    const shallowCopy: Record<string, unknown> = { ...original };
+    setByPath(shallowCopy, 'address.city', 'Mumbai');
+    // the copy sees the new value...
+    expect(getByPath(shallowCopy, 'address.city')).toBe('Mumbai');
+    // ...but the original object's nested `address` is untouched
+    expect(original.address).toEqual({ city: 'Delhi', zip: '110001' });
+  });
+
+  it('is a no-op for an empty path', () => {
+    const obj: Record<string, unknown> = { a: 1 };
+    setByPath(obj, '', 999);
+    expect(obj).toEqual({ a: 1 });
   });
 });
 
