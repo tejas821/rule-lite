@@ -1,0 +1,42 @@
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly re-scan even with no code changes, since the npm advisory
+    # database and CodeQL's rule set both update independently of this repo.
+    - cron: '0 6 * * 1'
+
+jobs:
+  dependency-audit:
+    name: Dependency CVE scan (npm audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+      - run: npm install
+      # Fails the build on any high/critical advisory in the dependency tree.
+      # rule-lite ships with zero runtime dependencies, so this only ever
+      # flags the dev/build toolchain (jest, tsup, typescript) — never
+      # anything a consumer's `npm install rule-lite` actually pulls in.
+      - run: npm audit --audit-level=high
+
+  codeql:
+    name: Static analysis (CodeQL)
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+      - uses: github/codeql-action/analyze@v3
