@@ -1,7 +1,7 @@
 {
   "name": "rule-lite",
-  "version": "0.1.0",
-  "description": "Tiny, dependency-free TypeScript engine for evaluating JSON-defined conditional rules — for dynamic forms, feature flags, and business rules in enterprise apps.",
+  "version": "2.1.0",
+  "description": "Tiny, dependency-free TypeScript rule engine — JSON-defined conditional logic for feature flags and business rules (v1, unchanged), plus a form-action engine that turns rules into dynamic form behavior: setValue, setValidation, filterDropdown, setOptions, show/hide, enable/disable, resetValue and crossFieldValidation, with dependency-graph cascading and cycle protection.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -22,6 +22,8 @@
     "conditional-logic",
     "business-rules",
     "dynamic-forms",
+    "form-rules",
+    "reactive-forms",
     "feature-flags",
     "typescript"
   ],
