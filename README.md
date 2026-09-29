@@ -401,7 +401,7 @@ engine.evaluate(formData, {
 });
 ```
 
-On a field change, theengine seeds a worklist with only the rules that directly depend on that field (from a dependency graph built once at compile time), evaluates them, and — only for rules whose action **actually changed a value** — enqueues whatever rules depend on *that* field next. This repeats to a fixpoint. A long dependency chain (country → state → city → tax → total) fully resolves in one `evaluate()` call; an unrelated rule elsewhere in a large form is never touched. `mode: 'full'` (the default with no `changedFields`, e.g. on initial form load) evaluates every rule once regardless of dependencies.
+On a field change, the engine seeds a worklist with only the rules that directly depend on that field (from a dependency graph built once at compile time), evaluates them, and — only for rules whose action **actually changed a value** — enqueues whatever rules depend on *that* field next. This repeats to a fixpoint. A long dependency chain (country → state → city → tax → total) fully resolves in one `evaluate()` call; an unrelated rule elsewhere in a large form is never touched. `mode: 'full'` (the default with no `changedFields`, e.g. on initial form load) evaluates every rule once regardless of dependencies.
 
 ## Conflict resolution
 
@@ -682,6 +682,10 @@ All errors are typed and carry the failing rule id for fast debugging:
 `compileFormRules(config)` (and `compileFieldConfig()`, which returns the same shape) gives you a `CompiledFormRuleSet`: `{ config, warnings, evaluate(formData, options), getDependencyGraph() }`. `config` is the exact `FormRuleConfig` you passed in (or the flattened one, for `compileFieldConfig`) — handy if downstream code needs the raw config back, e.g. to feed into `getRuleTree()` alongside a compiled engine.
 
 ## Changelog
+
+### 2.1.1 — 2026-09-30
+
+- Dev-toolchain dependency updates (brace-expansion, js-yaml) resolving 2 high-severity CI audit findings. No changes to published runtime code — rule-lite still ships with 0 runtime dependencies.
 
 ### 2.1.0 — 2026-09-30
 
